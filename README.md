@@ -1,6 +1,6 @@
 # cvector
 
-![Alt Text](https://github.com/ivanMoskalevDev/cvector/blob/main/cvector/Resources/logo.png)
+![Alt Text](https://github.com/ivanMoskalevDev/cvector/blob/main/Resources/logo.png)
 
 \
 RU: \
