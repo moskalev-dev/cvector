@@ -3,17 +3,17 @@
 #include <stdio.h>
 
 // приватные функции, но публично вызываемые по указатель из вне:
-int         cv_size     (cvector* v);
-int         cv_count    (cvector* v);
-int         cv_capacity (cvector* v);
-int         cv_isempty  (cvector* v);
-int         cv_push     (cvector* v, const cv_byte* element);
-int         cv_pop      (cvector* v);
-int         cv_replace  (cvector* v, unsigned int index, const cv_byte* element);
-int         cv_remove   (cvector* v, unsigned int index);
-void        cv_clear    (cvector* v);
-void        cv_free     (cvector* v);
-cv_byte*    cv_at       (cvector* v, unsigned int index);
+unsigned long   cv_size     (cvector* v);
+unsigned long   cv_count    (cvector* v);
+unsigned long   cv_capacity (cvector* v);
+cv_byte*        cv_at       (cvector* v, unsigned int index);
+cv_byte         cv_empty    (cvector* v);
+cv_byte         cv_push     (cvector* v, const cv_byte* element);
+cv_byte         cv_pop      (cvector* v);
+cv_byte         cv_replace  (cvector* v, unsigned int index, const cv_byte* element);
+cv_byte         cv_remove   (cvector* v, unsigned int index);
+void            cv_clear    (cvector* v);
+void            cv_free     (cvector* v);
 
 // приватные функции, доступные только в этом файле:
 int p_cv_slow_realloc(cvector *v);
@@ -27,9 +27,12 @@ struct cprivate_s
     cv_byte* p_data;    // указатель на массив с данными
 };
 
-/// @brief выделение памяти для вектора
-cvector* cvector_new(int max_item, size_t item_size) {
-
+/// @brief выделение памяти под массив данных размером max_item*item_size
+/// @param max_item -  максимально хранящееся количество элементов,
+/// если max_item = 0, то динамический размер.
+/// @param item_size - размер элемента в байтах
+cvector* cvector_new(int max_item, size_t item_size)
+{
     cvector* v = (cvector*)malloc(sizeof(cvector));
 
     if(v == NULL)
@@ -60,7 +63,7 @@ cvector* cvector_new(int max_item, size_t item_size) {
     v->size     = cv_size;
     v->count    = cv_count;
     v->capacity = cv_capacity;
-    v->empty    = cv_isempty;
+    v->empty    = cv_empty;
     v->push     = cv_push;
     v->pop      = cv_pop;
     v->replace  = cv_replace;
@@ -74,7 +77,7 @@ cvector* cvector_new(int max_item, size_t item_size) {
 }
 
 /// @brief истина - если вектор пуст
-int cv_isempty(cvector *v)
+cv_byte cv_empty(cvector *v)
 {
 
     if(v != NULL)
@@ -87,9 +90,9 @@ int cv_isempty(cvector *v)
 }
 
 /// @brief размер данных (всех элементов) в байтах
-int cv_size(cvector *v)
+unsigned long cv_size(cvector *v)
 {
-    int ret = 0;
+    unsigned long ret = 0;
     if(v != NULL)
     {
         ret = &v->priv->p_data[v->priv->p_size_in*v->priv->p_item_size]
@@ -99,7 +102,7 @@ int cv_size(cvector *v)
 }
 
 /// @brief количество элементов в векторе
-int cv_count(cvector *v)
+unsigned long cv_count(cvector *v)
 {
     if(v != NULL)
         return v->priv->p_size_in;
@@ -108,7 +111,7 @@ int cv_count(cvector *v)
 }
 
 /// @brief размер выделенной памяти под вектор в байтах
-int cv_capacity(cvector *v)
+unsigned long cv_capacity(cvector *v)
 {
     if(v != NULL)
         return v->priv->p_alloc_size;
@@ -117,7 +120,7 @@ int cv_capacity(cvector *v)
 }
 
 /// @brief Добавление элемента в конец
-int cv_push(cvector *v, const cv_byte* element)
+cv_byte cv_push(cvector *v, const cv_byte* element)
 {
     if(v != NULL)
     {
@@ -153,7 +156,9 @@ int cv_push(cvector *v, const cv_byte* element)
 }
 
 /// @brief Удаление элемента из конца
-int cv_pop(cvector *v)
+/// @return 0 - ошибка удаление
+/// @return 1 - успешное удаление
+cv_byte cv_pop(cvector *v)
 {
     if(v != NULL && v->priv->p_data != NULL && v->priv->p_size_in > 0)
     {
@@ -178,7 +183,7 @@ int cv_pop(cvector *v)
 }
 
 /// @brief Замена элемента по индексу
-int cv_replace(cvector *v, unsigned int index, const cv_byte* element)
+cv_byte cv_replace(cvector *v, unsigned int index, const cv_byte* element)
 {
     if(v != NULL)
     {
@@ -194,7 +199,7 @@ int cv_replace(cvector *v, unsigned int index, const cv_byte* element)
 
 /// @brief Удаление элемента по индексу O(log n)
 /// Используем указательную арифметику, т.к. она быстрее для большинства компиляторов
-int cv_remove(cvector *v, unsigned int index)
+cv_byte cv_remove(cvector *v, unsigned int index)
 {
     if(v == NULL || v->priv->p_data == NULL || index > v->priv->p_size_in-1 || v->priv->p_size_in < 1)
         return 0;
@@ -227,35 +232,6 @@ int cv_remove(cvector *v, unsigned int index)
     return 1;
 }
 
-/// @brief "медленное" перевыделение памяти,
-/// используется в функциях pop и remove
-int p_cv_slow_realloc(cvector *v)
-{
-    // Хвост освобождаем (realloc) если текущий размер резерва
-    // превысил требуемый на 50%, например:
-    // Пусть размер одного элемента - 1 байт,
-    // после ряда удалений требуется 25 байт для данных,
-    // всего выделено 62 байта (данные+резерв),
-    // для 25 байт данных достаточно 25 байт резерва,
-    // но реалокацию выполним размер хвоста будет больше,
-    // чем 25+(25/2) байт.
-    // Т.е. хвост = 62(всего выделено) - 25(данные),
-    // если хвост >= 25(требуемый резерв)+(25/2), то реаллоцируем.
-    unsigned int size = v->priv->p_size_in * v->priv->p_item_size; // требуемый размер
-
-    // (size>0) - при удалении последнего элемента память не перевыделяем,
-    // остается висеть количество байт для одного элемента + резерв.
-    if( size>0 && v->priv->p_alloc_size - size >= size+(size/2) )
-    {
-        v->priv->p_alloc_size = size*2;
-        cv_byte* rv = (cv_byte*)realloc(v->priv->p_data, v->priv->p_alloc_size);
-        if(rv == NULL) return 0;
-        v->priv->p_data = rv;
-    }
-
-    return 1;
-}
-
 /// @brief чтение элемента по индексу O(1)
 /// @return возвращает указатель на начало элемента
 cv_byte* cv_at(cvector* v, unsigned int index)
@@ -266,6 +242,8 @@ cv_byte* cv_at(cvector* v, unsigned int index)
     return &v->priv->p_data[index * v->priv->p_item_size];
 }
 
+/// @brief Удаление всех байтов и реалокация до одного байта
+/// После вызова этой функции capacity, size и count равны нулю
 void cv_clear(cvector* v)
 {
     if(v != NULL)
@@ -282,17 +260,47 @@ void cv_clear(cvector* v)
     }
 }
 
+/// @brief Освобождение памяти (удаление вектора из памяти)
 void cv_free(cvector* v)
 {
-    if(v != NULL)
+    if(v != NULL && v->priv != NULL)
     {
         if(v->priv->p_data != NULL)
         {
             free(v->priv->p_data);
-            v->priv->p_data =NULL;
+            v->priv->p_data = NULL;
         }
-        v->priv->p_max_count = 0;
-        v->priv->p_size_in = 0;
+        free(v->priv);
         free(v);
     }
+}
+
+
+/// @brief "медленное" перевыделение памяти,
+/// используется в функциях pop и remove
+int p_cv_slow_realloc(cvector *v)
+{
+    // Хвост освобождаем (realloc) если текущий размер резерва
+    // превысил требуемый на 50%, например:
+    // Пусть размер одного элемента - 1 байт,
+    // после ряда удалений требуется 25 байт для данных,
+    // всего выделено 62 байта (данные+резерв),
+    // для 25 байт данных достаточно 25 байт резерва,
+    // но реалокацию выполним если размер хвоста будет больше,
+    // чем 25+(25/2) байт.
+    // Т.е. хвост = 62(всего выделено) - 25(данные),
+    // если хвост >= 25(требуемый резерв)+(25/2), то реаллоцируем.
+    unsigned int size = v->priv->p_size_in * v->priv->p_item_size; // требуемый размер
+
+    // (size>0) - при удалении последнего элемента память не перевыделяем,
+    // остается висеть количество байт для одного элемента + резерв.
+    if( size>0 && v->priv->p_alloc_size - size >= size+(size/2) )
+    {
+        v->priv->p_alloc_size = size*2;
+        cv_byte* rv = (cv_byte*)realloc(v->priv->p_data, v->priv->p_alloc_size);
+        if(rv == NULL) return 0;
+        v->priv->p_data = rv;
+    }
+
+    return 1;
 }

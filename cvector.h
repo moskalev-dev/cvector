@@ -12,26 +12,61 @@ typedef struct cprivate_s cprivate_t;
 typedef struct cvector_s cvector;
 typedef unsigned char cv_byte;
 
-typedef int (*fp_cv_rint)(cvector*);
-typedef int (*fp_cv_rint_i)(cvector*, unsigned int);
-typedef int (*fp_cv_rint_uc)(cvector*, const cv_byte*);
-typedef int (*fp_cv_rint_ui_uc)(cvector*, unsigned int, const cv_byte*);
-typedef cv_byte* (*fp_cv_ruc_ui)(cvector*, unsigned int);
-typedef void (*fp_cv)(cvector*);
+typedef unsigned long   (*fp_cv_rul)(cvector*);
+typedef cv_byte         (*fp_cv_rbyte)(cvector*);
+typedef cv_byte         (*fp_cv_rbyte_i)(cvector*, unsigned int);
+typedef cv_byte         (*fp_cv_rbyte_uc)(cvector*, const cv_byte*);
+typedef cv_byte         (*fp_cv_rbyte_ui_uc)(cvector*, unsigned int, const cv_byte*);
+typedef cv_byte*        (*fp_cv_ruc_ui)(cvector*, unsigned int);
+typedef void            (*fp_cv)(cvector*);
 
 struct cvector_s
 {
     // public:
-    fp_cv_rint          size;
-    fp_cv_rint          count;
-    fp_cv_rint          capacity;
-    fp_cv_rint          empty;
-    fp_cv_rint_uc       push;
-    fp_cv_rint          pop;
-    fp_cv_rint_ui_uc    replace;
-    fp_cv_rint_i        remove;
+    /// @brief Размер данных (всех элементов) в байтах
+    fp_cv_rul           size;
+
+    /// @brief Количество элементов в векторе
+    fp_cv_rul           count;
+
+    /// @brief Размер выделенной памяти под вектор в байтах
+    /// @return 0 - память не выделена
+    /// @return size - размер в байтах
+    fp_cv_rul           capacity;
+
+    /// @brief Проверка на наличие элементов в векторе
+    fp_cv_rbyte         empty;
+
+    /// @brief Добавление элемента в конец
+    /// @return 0 - ошибка добавления
+    /// @return 1 - успешное добавление
+    fp_cv_rbyte_uc      push;
+
+    /// @brief Удаление элемента из конца
+    /// @return 0 - ошибка удаления
+    /// @return 1 - успешное удаление
+    fp_cv_rbyte         pop;
+
+    /// @brief Замена элемента по индексу
+    /// @return 0 - ошибка замены
+    /// @return 1 - успешная замена
+    fp_cv_rbyte_ui_uc   replace;
+
+    /// @brief Удаление элемента по индексу O(log n)
+    /// Используем указательную арифметику,
+    /// т.к. она быстрее для большинства компиляторов
+    fp_cv_rbyte_i       remove;
+
+    /// @brief Чтение элемента по индексу O(1)
+    /// @return ptr - возвращает указатель на начало элемента
+    /// @return NULL - если элемент недоступен
     fp_cv_ruc_ui        at;
+
+    /// @brief Удаление всех байтов и реалокация до одного байта
+    /// После вызова этой функции capacity, size и count равны нулю
     fp_cv               clear;
+
+    /// @brief Освобождение памяти (удаление вектора из памяти)
     fp_cv               free;
 
     // private:

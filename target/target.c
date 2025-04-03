@@ -17,13 +17,13 @@ int main(int argc, char *argv[])
         vector->push(vector, (cv_byte*)&a);
         //printf ("push: count = %d capacity = %d \n", vector->count(vector), vector->capacity(vector));
     }
-    printf ("End push: count = %d capacity = %d \n\n",vector->count(vector), vector->capacity(vector));
+    printf ("End push: count = %lu capacity = %lu \n\n",vector->count(vector), vector->capacity(vector));
 
     // pop
     for(i=0; i<2; i++)
     {
-        printf ("Pop: count = %d capacity = %d \n",vector->count(vector), vector->capacity(vector));
         vector->pop(vector);
+        printf ("Pop: count = %lu capacity = %lu \n",vector->count(vector), vector->capacity(vector));
     }
 
     // at
@@ -32,12 +32,12 @@ int main(int argc, char *argv[])
         int *at = (int*)vector->at(vector,i);
         if(at)
         {
-            printf ("At: vector[%d] = %d | count = %d capacity = %d \n",
+            printf ("At: vector[%d] = %d | count = %lu capacity = %lu \n",
                    i,*at, vector->count(vector), vector->capacity(vector));
         }
     }
 
-    printf ("Empty: count = %d capacity = %d empty=%d\n",
+    printf ("Empty: count = %lu capacity = %lu empty=%d\n",
            vector->count(vector), vector->capacity(vector),vector->empty(vector));
 
     // replace
@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
     int *at2 = (int*)vector->at(vector,10);
     if(at2)
     {
-        printf ("Replace: vector[10] = %d | count = %d capacity = %d \n",
+        printf ("Replace: vector[10] = %d | count = %lu capacity = %lu \n",
                *at2, vector->count(vector), vector->capacity(vector));
     }
 
@@ -55,19 +55,26 @@ int main(int argc, char *argv[])
     int *at3 = (int*)vector->at(vector,10);
     if(at3)
     {
-        printf ("Remove: vector[10] = %d | count = %d capacity = %d \n",
+        printf ("Remove: vector[10] = %d | count = %lu capacity = %lu \n",
                *at3, vector->count(vector), vector->capacity(vector));
+    }
+
+    // pop
+    for(i=0; i<30; i++)
+    {
+        vector->pop(vector);
+        printf ("Pop: count = %lu capacity = %lu \n",vector->count(vector), vector->capacity(vector));
     }
 
     // clear
     vector->clear(vector);
-    printf ("Clear: count = %d capacity = %d \n",
+    printf ("Clear: count = %lu capacity = %lu \n",
            vector->count(vector), vector->capacity(vector));
 
     int *at4 = (int*)vector->at(vector,10);
     if(at4)
     {
-        printf ("At after clear: vector[10] = %d | count = %d capacity = %d \n",
+        printf ("At after clear: vector[10] = %d | count = %lu capacity = %lu \n",
                *at4, vector->count(vector), vector->capacity(vector));
     }
 
