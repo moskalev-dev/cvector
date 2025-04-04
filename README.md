@@ -19,21 +19,25 @@
 также происходит реаллокация (освобождение) памяти.\
 Размер зарезервированной памяти можно узнать с помощью функции capacity().
 
-### Для выделения в памяти вектора необходимо:
-cvector* vector = NULL;  // создать указатель на структуру  \
-vector = cvector_new (0, sizeof(int));  // аллоцировать динамический вектор в памяти \
+### 🚀 Для выделения в памяти вектора необходимо:
+```c
+cvector* vector = NULL;  // создать указатель на структуру
+vector = cvector_new (0, sizeof(int));  // аллоцировать динамический вектор в памяти 
+```
 В функцию cvector_new:
  - Первым параметром (max_item) передается признак динамического
 вектора: max_item = 0 - вектор динамического размера, 
 max_item > 0 -  максимально хранящееся количество элементов.
  - Вторым параметром (item_size) передается размер элемента в байтах.
  
-### Пример обращения к функциям:
-int a = 8;\
-vector->push(vector, (cv_byte*)&a);\
+### 🚀 Пример обращения к функциям:
+```c
+int a = 8;
+vector->push(vector, (cv_byte*)&a);
 vector->pop(vector);
+```
 
-### Библиотека имеет следующие функции:
+### ⚙️ Библиотека имеет следующие функции:
  - size - Размер данных (всех элементов) в байтах;
  - count - Количество элементов в векторе;
  - capacity - Размер выделенной памяти под вектор в байтах;
@@ -64,21 +68,25 @@ When deleting items, when the reserve size becomes large,
 the memory is also deallocated. \
 The size of the reserved memory can be found using the capacity() function.
 
-### To allocate a vector in memory, you must:
-cvector* vector = NULL; // create a pointer to the structure \
-vector = cvector_new (0, sizeof(int)); // alocate the vector in memory \
+### 🚀 To allocate a vector in memory, you must:
+```c
+cvector* vector = NULL; // create a pointer to the structure
+vector = cvector_new (0, sizeof(int)); // alocate the vector in memory
+```
 To the cvector_new function:
  - The first parameter (max_item) indicates the dynamic
 vector: max_item = 0 is a vector of dynamic size,
 max_item > 0 is the maximum number of elements stored.
  - The second parameter (item_size) specifies the size of the item in bytes.
  
-### Example of accessing functions:
-int a = 8;\
-vector->push(vector, (cv_byte*)&a);\
+### 🚀 Example of accessing functions:
+```c
+int a = 8;
+vector->push(vector, (cv_byte*)&a);
 vector->pop(vector);
+```
 
-### The library has the following functions:
+### ⚙️ The library has the following functions:
 - size - The size of the data (of all elements) in bytes;
 - count - The number of elements in the vector;
 - capacity - The size of the allocated memory for the vector in bytes;
