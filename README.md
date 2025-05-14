@@ -1,6 +1,6 @@
 # cvector
 
-![Alt Text](https://github.com/ivanMoskalevDev/cvector/blob/main/target/resources/logo.png)
+![Alt Text](https://github.com/moskalev-dev/cvector/blob/main/target/resources/logo.png)
 
 #
 # RU:
@@ -17,7 +17,8 @@
 [текущее колличество элементов + (текущее колличество элементов / 2)].\
 При удалении элементов, когда размер резерва становится большим, 
 также происходит реаллокация (освобождение) памяти.\
-Размер зарезервированной памяти можно узнать с помощью функции capacity().
+Размер зарезервированной памяти можно узнать с помощью функции capacity().\
+Пример работы библиотеки (CMake проект) находится в директории "target".
 
 ### 🚀 Для выделения в памяти вектора необходимо:
 ```c
@@ -33,8 +34,27 @@ max_item > 0 -  максимально хранящееся количество
 ### 🚀 Пример обращения к функциям:
 ```c
 int a = 8;
-vector->push(vector, (cv_byte*)&a);
-vector->pop(vector);
+cv_byte = vector->push(vector, (cv_byte*)&a);
+
+cv_byte = vector->pop(vector);
+
+int *at = (int*)vector->at(vector,0);
+
+unsigned long = vector->count(vector);
+
+unsigned long = vector->capacity(vector);
+
+cv_byte = vector->empty(vector);
+
+int b = 9;
+cv_byte = vector->replace(vector, 0, (cv_byte*)&b);
+
+cv_byte = vector->remove(vector, 0);
+
+vector->clear(vector);
+
+vector->free(vector);
+vector = NULL;
 ```
 
 ### ⚙️ Библиотека имеет следующие функции:
@@ -66,7 +86,8 @@ the total number of realocations according to the formula:
 [current number of elements + (current number of elements / 2)].\
 When deleting items, when the reserve size becomes large,
 the memory is also deallocated. \
-The size of the reserved memory can be found using the capacity() function.
+The size of the reserved memory can be found using the capacity() function. \
+An example of how the library works (CMake project) is located in the "target" directory.
 
 ### 🚀 To allocate a vector in memory, you must:
 ```c
@@ -82,8 +103,27 @@ max_item > 0 is the maximum number of elements stored.
 ### 🚀 Example of accessing functions:
 ```c
 int a = 8;
-vector->push(vector, (cv_byte*)&a);
-vector->pop(vector);
+cv_byte = vector->push(vector, (cv_byte*)&a);
+
+cv_byte = vector->pop(vector);
+
+int *at = (int*)vector->at(vector,0);
+
+unsigned long = vector->count(vector);
+
+unsigned long = vector->capacity(vector);
+
+cv_byte = vector->empty(vector);
+
+int b = 9;
+cv_byte = vector->replace(vector, 0, (cv_byte*)&b);
+
+cv_byte = vector->remove(vector, 0);
+
+vector->clear(vector);
+
+vector->free(vector);
+vector = NULL;
 ```
 
 ### ⚙️ The library has the following functions:
